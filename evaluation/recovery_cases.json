@@ -1,0 +1,38 @@
+[
+  {
+    "name": "initial_failure_triggers_retry",
+    "initial_retry_count": 0,
+    "expected_retry_count": 1,
+    "expected_route": "retry"
+  },
+  {
+    "name": "second_failure_stops_retry",
+    "initial_retry_count": 1,
+    "expected_retry_count": 1,
+    "expected_route": "end"
+  },
+  {
+    "name": "retry_limit_boundary",
+    "initial_retry_count": 1,
+    "expected_retry_count": 1,
+    "expected_route": "end"
+  },
+  {
+    "name": "zero_retry_starts_recovery",
+    "initial_retry_count": 0,
+    "expected_retry_count": 1,
+    "expected_route": "retry"
+  },
+  {
+    "name": "maximum_retry_does_not_increase",
+    "initial_retry_count": 1,
+    "expected_retry_count": 1,
+    "expected_route": "end"
+  },
+  {
+    "name": "recovery_remains_deterministic",
+    "initial_retry_count": 0,
+    "expected_retry_count": 1,
+    "expected_route": "retry"
+  }
+]

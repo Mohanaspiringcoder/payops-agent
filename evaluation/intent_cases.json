@@ -1,0 +1,146 @@
+[
+  {
+    "question": "What is the payment success rate?",
+    "expected_intent": "SUCCESS_RATE"
+  },
+  {
+    "question": "Why are payments failing?",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "Which bank has the most failures?",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Investigate why payments are failing",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Perform an investigation into payment failures",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Show me the payment failure reasons",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "What percentage of payments succeeded?",
+    "expected_intent": "SUCCESS_RATE"
+  },
+  {
+    "question": "Which sender bank has the most failed transactions?",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "How many payments were successful?",
+    "expected_intent": "SUCCESS_RATE"
+  },
+  {
+    "question": "How well are the payments performing?",
+    "expected_intent": "SUCCESS_RATE"
+  },
+  {
+    "question": "Give me the overall success percentage",
+    "expected_intent": "SUCCESS_RATE"
+  },
+  {
+    "question": "What caused the payment failures?",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "Give me a breakdown of failed payments",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "What are the main reasons transactions are failing?",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "How many transactions failed and why?",
+    "expected_intent": "FAILURE_ANALYSIS"
+  },
+  {
+    "question": "Which bank is experiencing the most failed payments?",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Show failure counts by bank",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Break down payment failures by sender bank",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Which receiving bank has the highest number of failures?",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Compare banks based on payment failures",
+    "expected_intent": "BANK_ANALYSIS"
+  },
+  {
+    "question": "Investigate the payment failure problem",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Can you investigate what is going wrong with payments?",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Perform a root cause investigation for the payment failures",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Analyze why payments are failing and investigate the issue",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "I need an investigation into the failed transactions",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "Please investigate the payment failures and tell me what we should look into",
+    "expected_intent": "INVESTIGATION"
+  },
+  {
+    "question": "What is the weather today?",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Tell me a joke",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Write a Python program for me",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Who is the CEO of Google?",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "What is the capital of France?",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Help me plan my vacation",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Explain how neural networks work",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Write an email to my manager",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "What is the latest cricket score?",
+    "expected_intent": "OUT_OF_SCOPE"
+  },
+  {
+    "question": "Can you translate this sentence into Hindi?",
+    "expected_intent": "OUT_OF_SCOPE"
+  }
+]

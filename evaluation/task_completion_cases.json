@@ -1,0 +1,50 @@
+[
+  {
+    "name": "approved_investigation",
+    "question": "Investigate why payments are failing",
+    "approval_status": "APPROVED",
+    "expected_incident_status": "CREATED"
+  },
+  {
+    "name": "rejected_investigation",
+    "question": "Investigate why payments are failing",
+    "approval_status": "REJECTED",
+    "expected_incident_status": "BLOCKED"
+  },
+  {
+    "name": "approved_root_cause_investigation",
+    "question": "Perform a root cause investigation for payment failures",
+    "approval_status": "APPROVED",
+    "expected_incident_status": "CREATED"
+  },
+  {
+    "name": "rejected_root_cause_investigation",
+    "question": "Perform a root cause investigation for payment failures",
+    "approval_status": "REJECTED",
+    "expected_incident_status": "BLOCKED"
+  },
+  {
+    "name": "approved_payment_failure_investigation",
+    "question": "Investigate the payment failure problem",
+    "approval_status": "APPROVED",
+    "expected_incident_status": "CREATED"
+  },
+  {
+    "name": "rejected_payment_failure_investigation",
+    "question": "Investigate the payment failure problem",
+    "approval_status": "REJECTED",
+    "expected_incident_status": "BLOCKED"
+  },
+  {
+    "name": "approved_failed_transaction_investigation",
+    "question": "I need an investigation into the failed transactions",
+    "approval_status": "APPROVED",
+    "expected_incident_status": "CREATED"
+  },
+  {
+    "name": "rejected_failed_transaction_investigation",
+    "question": "I need an investigation into the failed transactions",
+    "approval_status": "REJECTED",
+    "expected_incident_status": "BLOCKED"
+  }
+]

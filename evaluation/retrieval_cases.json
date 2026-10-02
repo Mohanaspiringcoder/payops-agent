@@ -1,0 +1,82 @@
+[
+  {
+    "question": "How should TIMEOUT failures be investigated?",
+    "expected_failure_code": "TIMEOUT"
+  },
+  {
+    "question": "What does a TIMEOUT failure mean?",
+    "expected_failure_code": "TIMEOUT"
+  },
+  {
+    "question": "What is the operational meaning of TIMEOUT?",
+    "expected_failure_code": "TIMEOUT"
+  },
+  {
+    "question": "What should we check when transactions are timing out?",
+    "expected_failure_code": "TIMEOUT"
+  },
+  {
+    "question": "What investigation guidance applies to timeout payment failures?",
+    "expected_failure_code": "TIMEOUT"
+  },
+  {
+    "question": "What does INSUFFICIENT_FUNDS mean?",
+    "expected_failure_code": "INSUFFICIENT_FUNDS"
+  },
+  {
+    "question": "How should insufficient funds failures be investigated?",
+    "expected_failure_code": "INSUFFICIENT_FUNDS"
+  },
+  {
+    "question": "What is the operational meaning of INSUFFICIENT_FUNDS?",
+    "expected_failure_code": "INSUFFICIENT_FUNDS"
+  },
+  {
+    "question": "What should we check for an insufficient funds payment failure?",
+    "expected_failure_code": "INSUFFICIENT_FUNDS"
+  },
+  {
+    "question": "Give me investigation guidance for INSUFFICIENT_FUNDS failures",
+    "expected_failure_code": "INSUFFICIENT_FUNDS"
+  },
+  {
+    "question": "How should BANK_ERROR failures be investigated?",
+    "expected_failure_code": "BANK_ERROR"
+  },
+  {
+    "question": "What does a BANK_ERROR failure mean?",
+    "expected_failure_code": "BANK_ERROR"
+  },
+  {
+    "question": "What is the operational meaning of BANK_ERROR?",
+    "expected_failure_code": "BANK_ERROR"
+  },
+  {
+    "question": "What should we check when a payment receives a bank error?",
+    "expected_failure_code": "BANK_ERROR"
+  },
+  {
+    "question": "What investigation guidance applies to BANK_ERROR failures?",
+    "expected_failure_code": "BANK_ERROR"
+  },
+  {
+    "question": "What is the operational meaning of TECHNICAL_ERROR?",
+    "expected_failure_code": "TECHNICAL_ERROR"
+  },
+  {
+    "question": "What does a TECHNICAL_ERROR failure mean?",
+    "expected_failure_code": "TECHNICAL_ERROR"
+  },
+  {
+    "question": "How should technical payment failures be investigated?",
+    "expected_failure_code": "TECHNICAL_ERROR"
+  },
+  {
+    "question": "What should we check when a transaction has a technical error?",
+    "expected_failure_code": "TECHNICAL_ERROR"
+  },
+  {
+    "question": "Give me investigation guidance for TECHNICAL_ERROR failures",
+    "expected_failure_code": "TECHNICAL_ERROR"
+  }
+]

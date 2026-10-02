@@ -1,0 +1,77 @@
+[
+  {
+    "name": "grounded_response",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- Most common failure reason: TIMEOUT, occurring in 3 out of 8 cases (37.5%)\n\nINTERPRETATION:\nThe most common failure reason is TIMEOUT.\n\nLIMITATIONS:\n- The available evidence does not establish the underlying cause for the TIMEOUT failures.\n\nNEXT INVESTIGATION:\nExamine transaction-level timestamps for the failed transactions.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_failure_count",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- Failure reasons include TIMEOUT, INSUFFICIENT_FUNDS, BANK_ERROR, and TECHNICAL_ERROR.\n\nINTERPRETATION:\nThere were 8 failed transactions in the available dataset.\n\nLIMITATIONS:\n- The evidence does not establish why the failures occurred beyond the recorded failure reasons.\n\nNEXT INVESTIGATION:\nInspect the individual failed transactions.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_timeout_frequency",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT occurred in 3 failed transactions.\n\nINTERPRETATION:\nTIMEOUT is the most frequently observed failure reason, accounting for 3 of the 8 failed transactions.\n\nLIMITATIONS:\n- The evidence does not establish the underlying cause of these TIMEOUT failures.\n\nNEXT INVESTIGATION:\nExamine the timestamps and transaction-level details of the TIMEOUT failures.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_limitation",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT is the most common failure reason.\n\nINTERPRETATION:\nTIMEOUT is the leading observed failure category.\n\nLIMITATIONS:\n- The available evidence is insufficient to identify the root cause.\n\nNEXT INVESTIGATION:\nInvestigate transaction-level timing and operational records.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_next_step",
+    "response": "OBSERVED EVIDENCE:\n- TIMEOUT occurred in 3 of the 8 failed transactions.\n\nINTERPRETATION:\nTIMEOUT is a significant observed failure category in the available data.\n\nLIMITATIONS:\n- The available transaction summary does not identify the underlying cause.\n\nNEXT INVESTIGATION:\nReview the individual TIMEOUT transactions and their timestamps.",
+    "expected_valid": true
+  },
+  {
+    "name": "unsupported_causal_claim",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- Most common failure reason: TIMEOUT, occurring in 3 out of 8 cases (37.5%)\n\nINTERPRETATION:\nThe network outage caused the TIMEOUT failures.\n\nLIMITATIONS:\n- The available evidence does not establish the underlying cause for the TIMEOUT failures.\n\nNEXT INVESTIGATION:\nExamine transaction-level timestamps.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_server_cause",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT occurred in 3 failed transactions.\n\nINTERPRETATION:\nThe payment server was overloaded and caused the TIMEOUT failures.\n\nLIMITATIONS:\n- The evidence does not establish the underlying cause.\n\nNEXT INVESTIGATION:\nCheck server metrics.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_number",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- Most common failure reason: TIMEOUT, occurring in 3 out of 8 cases (37.5%)\n\nINTERPRETATION:\nTIMEOUT failures affected 75% of all transactions.\n\nLIMITATIONS:\n- The available evidence does not establish the underlying cause.\n\nNEXT INVESTIGATION:\nExamine transaction-level timestamps.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_failure_count",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT occurred in 3 failed transactions.\n\nINTERPRETATION:\nThere were 20 TIMEOUT failures.\n\nLIMITATIONS:\n- The available evidence does not establish the underlying cause.\n\nNEXT INVESTIGATION:\nInspect transaction-level records.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_bank_relationship",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT is the most common failure reason.\n\nINTERPRETATION:\nSBI is responsible for most TIMEOUT failures.\n\nLIMITATIONS:\n- The available evidence does not establish which bank caused the TIMEOUT failures.\n\nNEXT INVESTIGATION:\nCompare TIMEOUT transactions by sender and receiver bank.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_correlation",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT occurred in 3 failed transactions.\n\nINTERPRETATION:\nTIMEOUT failures are correlated with high transaction amounts.\n\nLIMITATIONS:\n- The available evidence does not establish a relationship between transaction amount and TIMEOUT failures.\n\nNEXT INVESTIGATION:\nAnalyze transaction amounts for the TIMEOUT cases.",
+    "expected_valid": false
+  },
+  {
+    "name": "unsupported_infrastructure_claim",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT is the most common failure reason.\n\nINTERPRETATION:\nThe infrastructure is experiencing a capacity problem.\n\nLIMITATIONS:\n- The available evidence does not establish an infrastructure capacity issue.\n\nNEXT INVESTIGATION:\nReview infrastructure metrics.",
+    "expected_valid": false
+  },
+  {
+    "name": "grounded_multiple_failure_reasons",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- Failure reasons include TIMEOUT, INSUFFICIENT_FUNDS, BANK_ERROR, and TECHNICAL_ERROR.\n\nINTERPRETATION:\nMultiple failure categories are present in the available dataset.\n\nLIMITATIONS:\n- The evidence does not establish the operational cause of any individual failure category.\n\nNEXT INVESTIGATION:\nAnalyze each failure category at the transaction level.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_no_root_cause",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT is the most common failure reason.\n\nINTERPRETATION:\nThe available evidence identifies TIMEOUT as the most common observed failure reason, but it does not identify a root cause.\n\nLIMITATIONS:\n- Additional operational and transaction-level evidence is required to determine the root cause.\n\nNEXT INVESTIGATION:\nReview timestamps, bank information, and other transaction-level attributes.",
+    "expected_valid": true
+  },
+  {
+    "name": "grounded_observation_only",
+    "response": "OBSERVED EVIDENCE:\n- Total number of failed transactions: 8\n- TIMEOUT occurred in 3 of those failures.\n\nINTERPRETATION:\nTIMEOUT is observed in 3 failed transactions.\n\nLIMITATIONS:\n- No causal conclusion can be established from this summary alone.\n\nNEXT INVESTIGATION:\nInspect the corresponding transaction records.",
+    "expected_valid": true
+  }
+]

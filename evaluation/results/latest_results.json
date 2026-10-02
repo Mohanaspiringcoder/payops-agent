@@ -1,0 +1,35 @@
+{
+  "functional": {
+    "intent_selection": {
+      "correct": 36,
+      "total": 36,
+      "accuracy": 100.0
+    },
+    "retrieval_recall_at_2": {
+      "hits": 20,
+      "total": 20,
+      "recall": 100.0,
+      "k": 2
+    },
+    "groundedness": {
+      "correct": 15,
+      "total": 15,
+      "accuracy": 100.0
+    },
+    "task_completion": {
+      "correct": 8,
+      "total": 8,
+      "completion_rate": 100.0
+    },
+    "failure_recovery": {
+      "correct": 6,
+      "total": 6,
+      "accuracy": 100.0
+    }
+  },
+  "performance": {
+    "latency": {
+      "note": "Run independently with python -m evaluation.evaluate_latency"
+    }
+  }
+}

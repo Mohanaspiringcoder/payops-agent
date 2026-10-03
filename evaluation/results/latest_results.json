@@ -25,6 +25,11 @@
       "correct": 6,
       "total": 6,
       "accuracy": 100.0
+    },
+    "hitl": {
+      "correct": 2,
+      "total": 2,
+      "accuracy": 100.0
     }
   },
   "performance": {

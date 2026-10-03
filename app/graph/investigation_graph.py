@@ -1,7 +1,8 @@
+from app.persistence.checkpoint import checkpointer
 from typing import TypedDict
 
 from langgraph.graph import END, START, StateGraph
-
+from langgraph.types import interrupt
 from app.agents.investigation_agent import investigate_payment_failures
 from app.agents.sql_agent import run_data_agent
 from app.analytics.evidence import build_failure_evidence
@@ -13,6 +14,7 @@ from app.tools.report_tools import generate_incident_report
 
 
 class InvestigationState(TypedDict):
+    thread_id: str
     question: str
     evidence: dict
     operational_knowledge: dict
@@ -159,12 +161,31 @@ def report_node(state: InvestigationState) -> InvestigationState:
 
 
 def approval_node(state: InvestigationState) -> InvestigationState:
+    decision = interrupt(
+        {
+            "type": "incident_approval",
+            "thread_id": state["thread_id"],
+            "report": state["report"],
+            "message": "Human approval is required before creating the incident.",
+            "allowed_decisions": ["APPROVED", "REJECTED"],
+        }
+    )
+
+    if isinstance(decision, dict):
+        decision = decision.get("decision")
+
+    if decision not in {"APPROVED", "REJECTED"}:
+        raise ValueError(
+            "Human decision must be either 'APPROVED' or 'REJECTED'"
+        )
+
     approval = request_human_approval(
         report=state["report"],
-        decision=state["approval_status"],
+        decision=decision,
     )
 
     return {
+        "thread_id": state["thread_id"],
         "question": state["question"],
         "evidence": state["evidence"],
         "operational_knowledge": state["operational_knowledge"],
@@ -172,7 +193,7 @@ def approval_node(state: InvestigationState) -> InvestigationState:
         "validation": state["validation"],
         "retry_count": state["retry_count"],
         "report": state["report"],
-        "approval_status": state["approval_status"],
+        "approval_status": decision,
         "approval": approval,
         "incident": {},
     }
@@ -239,4 +260,4 @@ builder.add_edge("report", "approval")
 builder.add_edge("approval", "incident")
 builder.add_edge("incident", END)
 
-graph = builder.compile()
+graph = builder.compile(checkpointer=checkpointer)

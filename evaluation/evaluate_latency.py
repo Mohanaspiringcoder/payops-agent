@@ -8,11 +8,20 @@ QUESTION = "Investigate why payments are failing"
 RUNS = 3
 
 
-def run_investigation() -> float:
+def run_investigation(run_number: int) -> float:
+    thread_id = f"latency-evaluation-{run_number}"
+
+    config = {
+        "configurable": {
+            "thread_id": thread_id,
+        }
+    }
+
     start = time.perf_counter()
 
     investigation_graph.invoke(
         {
+            "thread_id": thread_id,
             "question": QUESTION,
             "evidence": {},
             "operational_knowledge": {},
@@ -23,7 +32,8 @@ def run_investigation() -> float:
             "approval_status": "REJECTED",
             "approval": {},
             "incident": {},
-        }
+        },
+        config=config,
     )
 
     end = time.perf_counter()
@@ -39,7 +49,7 @@ def evaluate_latency() -> dict:
     print(f"Runs: {RUNS}")
 
     for run_number in range(1, RUNS + 1):
-        latency = run_investigation()
+        latency = run_investigation(run_number)
         latencies.append(latency)
 
         print(f"Run {run_number}: {latency:.2f} seconds")

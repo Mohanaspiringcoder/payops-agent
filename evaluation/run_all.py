@@ -6,7 +6,7 @@ from evaluation.evaluate_intent import evaluate_intent_selection
 from evaluation.evaluate_recovery import evaluate_recovery
 from evaluation.evaluate_retrieval import evaluate_retrieval
 from evaluation.evaluate_task_completion import evaluate_task_completion
-
+from evaluation.evaluate_hitl import evaluate_hitl
 
 RESULTS_PATH = Path("evaluation/results/latest_results.json")
 
@@ -21,6 +21,7 @@ def run_all_evaluations() -> dict:
     groundedness_result = evaluate_groundedness()
     task_completion_result = evaluate_task_completion()
     recovery_result = evaluate_recovery()
+    hitl_result = evaluate_hitl()
 
     results = {
         "functional": {
@@ -29,6 +30,7 @@ def run_all_evaluations() -> dict:
             "groundedness": groundedness_result,
             "task_completion": task_completion_result,
             "failure_recovery": recovery_result,
+            "hitl": hitl_result,
         },
         "performance": {
             "latency": {
@@ -72,6 +74,10 @@ def run_all_evaluations() -> dict:
     print(
         f"Failure Recovery Accuracy: "
         f"{recovery_result['accuracy']:.2f}%"
+    )
+    print(
+            f"HITL Evaluation Accuracy  : "
+            f"{hitl_result['accuracy']:.2f}%"
     )
 
     print("=" * 70)

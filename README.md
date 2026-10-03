@@ -11,8 +11,9 @@ operational workflow:
 **Understand the request → select the workflow → retrieve verified
 transaction evidence → retrieve operational knowledge → investigate →
 validate the reasoning → retry when validation fails → generate an
-incident report → request human approval → create a simulated incident
-only when approved.**
+incident report → persist workflow state → pause for human approval →
+resume from the checkpoint → create a simulated incident only when
+approved.**
 
 The system uses **synthetic payment data and synthetic operational
 documentation** so that the project can demonstrate the architecture
@@ -429,6 +430,33 @@ This is an intentional safety boundary.
 The AI does not independently decide that a consequential operational
 action should happen.
 
+The approval boundary uses LangGraph's real interrupt/resume mechanism.
+Before pausing, the workflow state is persisted using a SQLite-backed
+LangGraph checkpointer keyed by `thread_id`.
+
+The flow is:
+
+``` text
+Investigation Report
+       |
+       v
+  checkpoint state
+       |
+       v
+ interrupt(...)
+       |
+       v
+  HUMAN DECISION
+       |
+       +---- APPROVED ----> resume checkpoint ----> Incident
+       |
+       +---- REJECTED ----> resume checkpoint ----> BLOCKED
+```
+
+A resumed workflow uses LangGraph `Command(resume=...)`, allowing the
+workflow to continue from the persisted state rather than restarting the
+investigation.
+
 ------------------------------------------------------------------------
 
 ### 10. Simulated Incident Creation
@@ -514,6 +542,7 @@ payops-agent/
 │   ├── evaluate_groundedness.py
 │   ├── evaluate_task_completion.py
 │   ├── evaluate_recovery.py
+│   ├── evaluate_hitl.py
 │   ├── evaluate_latency.py
 │   ├── run_all.py
 │   └── results/
@@ -640,7 +669,49 @@ visible.
 
 ------------------------------------------------------------------------
 
-## Routing Graph
+## Checkpointing and Persistence
+
+**File:** `app/persistence/checkpoint.py`
+
+The investigation graph uses a SQLite-backed LangGraph checkpointer to
+persist workflow state.
+
+Each investigation receives a `thread_id`, which allows LangGraph to
+associate checkpoints with a specific workflow session.
+
+The checkpoint database is generated locally at:
+
+``` text
+data/generated/payops_checkpoints.db
+```
+
+Generated runtime state is excluded from version control.
+
+Checkpointing is especially important for the human-in-the-loop boundary:
+the workflow can pause for approval and later resume from the persisted
+state instead of recomputing the investigation.
+
+The implementation uses:
+
+``` python
+config = {
+    "configurable": {
+        "thread_id": thread_id,
+    }
+}
+```
+
+and resumes an interrupted workflow with:
+
+``` python
+Command(resume={"decision": "APPROVED"})
+```
+
+This provides durable workflow state for the current local prototype.
+
+------------------------------------------------------------------------
+
+# Routing Graph
 
 **File:** `app/graph/routing_graph.py`
 
@@ -844,8 +915,10 @@ Human approval
      +---- REJECTED ----> Incident blocked
 ```
 
-This is currently a simulated approval mechanism and a simulated
-incident-management integration.
+The human approval mechanism is implemented using LangGraph's real
+pause/resume capability through `interrupt()` and `Command(resume=...)`.
+
+The incident-management action itself remains simulated.
 
 No real production incident is created.
 
@@ -884,7 +957,7 @@ python -m app.mcp.server
 The project includes a dedicated evaluation layer rather than relying
 only on unit tests.
 
-The evaluation suite measures five functional dimensions:
+The evaluation suite measures six functional dimensions:
 
 ### 1. Intent Selection
 
@@ -950,17 +1023,53 @@ Dataset:
 
 ------------------------------------------------------------------------
 
+### 6. Human-in-the-Loop
+
+Does the investigation workflow:
+
+- pause before incident creation
+- persist the workflow state
+- resume after a human decision
+- create an incident only when approved
+- block the incident when rejected
+
+Dataset:
+
+``` text
+2 scenarios
+```
+
+The HITL evaluator covers both:
+
+``` text
+APPROVED → CREATED
+REJECTED → BLOCKED
+```
+
+------------------------------------------------------------------------
+
 # Evaluation Results
 
 The final functional evaluation produced:
 
-  Metric                                    Result
-  --------------------------- --------------------
-  Intent Selection Accuracy     **36/36 --- 100%**
-  Retrieval Recall@2            **20/20 --- 100%**
-  Groundedness Accuracy         **15/15 --- 100%**
-  Task Completion Rate            **8/8 --- 100%**
-  Failure Recovery Accuracy       **6/6 --- 100%**
+  Metric                         Result
+  ---------------------------- --------------------
+  Intent Selection Accuracy    **36/36 --- 100%**
+  Retrieval Recall@2           **20/20 --- 100%**
+  Groundedness Accuracy        **15/15 --- 100%**
+  Task Completion Rate         **8/8 --- 100%**
+  Failure Recovery Accuracy   **6/6 --- 100%**
+  HITL Evaluation Accuracy     **2/2 --- 100%**
+
+The task-completion evaluator now exercises the real HITL pause/resume
+flow rather than bypassing approval.
+
+The HITL evaluator explicitly verifies both approval outcomes:
+
+``` text
+APPROVED → CREATED
+REJECTED → BLOCKED
+```
 
 These results are measured against the project's **synthetic evaluation
 datasets**. They should not be interpreted as production accuracy or
@@ -973,7 +1082,7 @@ real-world operational performance.
 A separate end-to-end investigation latency benchmark was run three
 times.
 
-Latest benchmark:
+Previous benchmark:
 
   Run                 Latency
   ------------- -------------
@@ -984,7 +1093,21 @@ Latest benchmark:
   Minimum             14.64 s
   Maximum             22.96 s
 
-This is a **local development benchmark**, not a production SLA.
+Latest benchmark after checkpointing and HITL persistence:
+
+  Run                 Latency
+  ------------- -------------
+  1                   21.20 s
+  2                   24.58 s
+  3                   25.27 s
+  **Average**     **23.68 s**
+  Minimum             21.20 s
+  Maximum             25.27 s
+
+The latest benchmark measures the investigation invocation through the
+persistent workflow up to the human-approval pause.
+
+These are **local development benchmarks**, not production SLAs.
 
 Latency depends on the local hardware, Ollama inference,
 embedding/retrieval work, graph execution, and the number of LLM
@@ -1140,7 +1263,60 @@ not an afterthought.
 
 ------------------------------------------------------------------------
 
-## Challenge 6: Keeping the project reproducible without real payment data
+## Challenge 6: Persisting state across long-running workflows
+
+A human approval step means the workflow cannot assume that execution
+finishes in a single uninterrupted call.
+
+### What changed
+
+A SQLite-backed LangGraph checkpointer was added, and every investigation
+is associated with a `thread_id`.
+
+The workflow can now:
+
+``` text
+Execute
+   ↓
+Persist checkpoint
+   ↓
+Pause for human approval
+   ↓
+Resume using the same thread
+```
+
+### Engineering lesson
+
+**Stateful agentic workflows need durable execution state when work can
+pause, resume, or require human intervention.**
+
+------------------------------------------------------------------------
+
+## Challenge 7: Making human approval a real workflow boundary
+
+The original approval path represented a decision but did not actually
+pause execution.
+
+### What changed
+
+The approval node now uses LangGraph `interrupt()`.
+
+A human decision is supplied later through:
+
+``` python
+Command(resume={"decision": "APPROVED"})
+```
+
+The workflow is tested for both approval outcomes.
+
+### Engineering lesson
+
+**Human-in-the-loop should be implemented as a workflow state transition,
+not merely as a boolean flag in application state.**
+
+------------------------------------------------------------------------
+
+## Challenge 8: Keeping the project reproducible without real payment data
 
 The project needed enough operational structure to demonstrate realistic
 workflows without using sensitive production information.
@@ -1163,7 +1339,7 @@ reproducible synthetic data.
 
 ------------------------------------------------------------------------
 
-## Challenge 7: Running local AI on CPU-only hardware
+## Challenge 9: Running local AI on CPU-only hardware
 
 The project was developed on a machine without an NVIDIA CUDA GPU.
 
@@ -1214,6 +1390,23 @@ Incident
 ```
 
 LangGraph makes these transitions explicit and testable.
+
+------------------------------------------------------------------------
+
+## Persistent workflow state
+
+The investigation graph uses a SQLite-backed LangGraph checkpointer with
+`thread_id`-based sessions.
+
+This design supports:
+
+- durable investigation state
+- pause/resume across human approval
+- reproducible workflow sessions
+- checkpoint inspection during development
+
+The checkpoint database remains a generated local artifact and is not
+committed to Git.
 
 ------------------------------------------------------------------------
 
@@ -1291,6 +1484,7 @@ implementation.
   Default local model      Qwen 2.5 1.5B
   LLM integration          LangChain Ollama
   Database                 SQLite
+  Workflow checkpointing   LangGraph SQLite Checkpointer
   Vector database          ChromaDB
   Embeddings               Sentence Transformers
   Embedding model          `all-MiniLM-L6-v2`
@@ -1459,8 +1653,11 @@ python -m pytest -q
 Final validation result:
 
 ``` text
-37 passed
+All tests passed
 ```
+
+The investigation graph tests include real pause/resume behavior for both
+approved and rejected incident decisions.
 
 ------------------------------------------------------------------------
 
@@ -1564,7 +1761,9 @@ Validation / guardrails
        +
 Retry / recovery
        +
-Human-in-the-loop approval
+Persistent checkpointing
+       +
+Real HITL pause/resume
        +
 MCP
        +

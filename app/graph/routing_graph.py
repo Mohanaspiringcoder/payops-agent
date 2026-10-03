@@ -1,3 +1,4 @@
+from app.persistence.checkpoint import checkpointer
 from typing import TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -10,6 +11,7 @@ from app.graph.investigation_graph import graph as investigation_graph
 
 
 class RoutingState(TypedDict):
+    thread_id: str
     question: str
     intent: str
     result: dict
@@ -55,9 +57,10 @@ def bank_analysis_node(state: RoutingState) -> RoutingState:
     }
 
 
-def investigation_node(state: RoutingState) -> RoutingState:
+def investigation_node(state: RoutingState, config) -> RoutingState:
     result = investigation_graph.invoke(
         {
+            "thread_id": state["thread_id"],
             "question": state["question"],
             "evidence": {},
             "operational_knowledge": {},
@@ -68,8 +71,16 @@ def investigation_node(state: RoutingState) -> RoutingState:
             "approval_status": "REJECTED",
             "approval": {},
             "incident": {},
-        }
+        },
+        config=config,
     )
+
+    if "__interrupt__" in result:
+        return {
+            "question": state["question"],
+            "intent": state["intent"],
+            "result": {},
+        }
 
     return {
         "question": state["question"],
@@ -83,7 +94,6 @@ def investigation_node(state: RoutingState) -> RoutingState:
             "incident": result["incident"],
         },
     }
-
 
 def out_of_scope_node(state: RoutingState) -> RoutingState:
     """
@@ -139,4 +149,4 @@ builder.add_edge("bank_analysis", END)
 builder.add_edge("investigation", END)
 builder.add_edge("out_of_scope", END)
 
-graph = builder.compile()
+graph = builder.compile(checkpointer=checkpointer)

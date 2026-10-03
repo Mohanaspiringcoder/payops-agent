@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from langgraph.types import Command
+
 from app.graph.investigation_graph import graph as investigation_graph
 
 
@@ -21,26 +23,53 @@ def evaluate_task_completion() -> dict:
     print("\nTask Completion Evaluation")
     print("=" * 60)
 
-    for case in cases:
+    for index, case in enumerate(cases, start=1):
         name = case["name"]
         question = case["question"]
         approval_status = case["approval_status"]
         expected_incident_status = case["expected_incident_status"]
 
-        result = investigation_graph.invoke(
-            {
-                "question": question,
-                "evidence": {},
-                "operational_knowledge": {},
-                "investigation": "",
-                "validation": {},
-                "retry_count": 0,
-                "report": {},
-                "approval_status": approval_status,
-                "approval": {},
-                "incident": {},
+        thread_id = f"task-completion-{index}"
+        config = {
+            "configurable": {
+                "thread_id": thread_id,
             }
+        }
+
+        initial_state = {
+            "thread_id": thread_id,
+            "question": question,
+            "evidence": {},
+            "operational_knowledge": {},
+            "investigation": "",
+            "validation": {},
+            "retry_count": 0,
+            "report": {},
+            "approval_status": "REJECTED",
+            "approval": {},
+            "incident": {},
+        }
+
+        paused = investigation_graph.invoke(
+            initial_state,
+            config=config,
         )
+
+        paused_for_approval = bool(
+            paused.get("__interrupt__")
+        )
+
+        if paused_for_approval:
+            result = investigation_graph.invoke(
+                Command(
+                    resume={
+                        "decision": approval_status,
+                    }
+                ),
+                config=config,
+            )
+        else:
+            result = paused
 
         incident = result.get("incident", {})
 
@@ -50,7 +79,8 @@ def evaluate_task_completion() -> dict:
         )
 
         is_correct = (
-            actual_incident_status == expected_incident_status
+            paused_for_approval
+            and actual_incident_status == expected_incident_status
         )
 
         if is_correct:
@@ -61,10 +91,16 @@ def evaluate_task_completion() -> dict:
         print(f"\n[{status}]")
         print(f"Case     : {name}")
         print(f"Approval : {approval_status}")
+        print(f"Paused   : {paused_for_approval}")
         print(f"Expected : {expected_incident_status}")
         print(f"Actual   : {actual_incident_status}")
 
-        if actual_incident_status == "INCOMPLETE":
+        if not paused_for_approval:
+            print(
+                "Reason   : Investigation workflow did not pause "
+                "for human approval."
+            )
+        elif actual_incident_status == "INCOMPLETE":
             print(
                 "Reason   : Investigation workflow did not reach "
                 "the incident decision stage."
